@@ -1,0 +1,123 @@
+
+body{
+	background: url('../images/city_badge_bw_vop.png') 50% 100px;
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+}
+
+.Active{
+	fill: #e41a1c;
+}
+
+.Closed {
+	fill: #4daf4a;
+}
+
+.Pending{
+	fill: #984ea3;
+}
+.Active:hover{
+	fill: darkred;
+}
+
+.Closed:hover{
+	fill: darkgreen;
+}
+
+.Pending:hover{
+	fill: #660066;
+}
+
+.Multifamily{
+	fill: #ff7f00;
+}
+
+.Commercial {
+	fill: #377eb8;
+}
+
+.Neighborhood {
+	fill:#a65628;
+}
+
+.chart {
+	/* float: left; */
+}
+
+.button {
+	cursor: pointer;
+	font-weight: bold;
+}
+
+.axis path {
+	stroke: none;
+	fill: none;
+}
+
+.axis line {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+}
+
+.arc path {
+  stroke: #fff;
+}
+
+.pieText {
+	font-size: .6em;
+	font-weight: bold;
+	fill: white;
+}
+
+.stacked-bar {
+  font-size: .8em;
+  font-weight: bold;
+}
+
+text.info {
+	font-size: 300%;
+	font-weight: bold;
+	dominant-baseline: bottom;
+	fill: black;
+	text-align: center;
+}
+
+.info-small {
+	font-size: 120%;
+	dominant-baseline: bottom;
+	fill: black;
+}
+
+.infoStat {
+	font-size: 600%;
+	font-weight: bold;
+	text-align: center;
+	dominant-baseline: bottom;
+	fill: black;
+
+}
+
+
+div.tooltip {   
+  position: absolute;           
+  text-align: center;                       
+  color: white;             
+  padding: 6px;             
+  font: 12px sans-serif;        
+  background: black;   
+  border-radius: 4px;           
+  border: 0px;      
+  
+  pointer-events: none;         
+}
+
+#map{
+	height: 200px;
+	width: 100%;
+}
+
+table {
+	background-color: #ccccc
+}
