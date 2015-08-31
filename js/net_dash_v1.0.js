@@ -1,4 +1,5 @@
 //Created by John Clary for the City of Austin Code Department - July 2015
+
 //globals
 var data1, data2, pie, pie2, arc, pctClosed;
 var cc_mf = [], cc_com = [], cc_nbhd = [], def_com = [], def_mf = [], def_nbhd=[];
@@ -726,7 +727,9 @@ function populateTable(){
 					d3.select(this).append("td").html(d.address);
 					d3.select(this).append("td").html(d.property_type);
 					d3.select(this).append("td").html(d.primary_reported_violation);
-					d3.select(this).append("td").html(d.status);
+					d3.select(this).append("td").attr("class", function(d){
+																			return d.status;
+																	}).html(d.status);
 					d3.select(this).append("td").html(formatDate(new Date(d.date_opened)));
 					d3.select(this).append("td").html(function(){
 						if (!(d.last_updated)){ 
@@ -737,10 +740,17 @@ function populateTable(){
 					})
 			})
 	//d3.select(this).append("td").html(d3.round(((new Date()) - (new Date(d.last_updated * 1000))) / (1000*60*60*24)) + " days ago");
+	
+	//activate sorting/search functionality
+	$(document).ready(function(){
+		$('#caseTable').DataTable(
+			{paging: false}
+		);
+	});
 }//end populateTable
 
 function updateTable(dataType){
-		d3.select("tbody").selectAll("tr").selectAll("td").remove()
+	d3.select("tbody").selectAll("tr").selectAll("td").remove()
 	
 	d3.select("tbody").selectAll("tr")
 		.filter(function(d){
@@ -755,7 +765,9 @@ function updateTable(dataType){
 					d3.select(this).append("td").html(d.address);
 					d3.select(this).append("td").html(d.property_type);
 					d3.select(this).append("td").html(d.primary_reported_violation)
-					d3.select(this).append("td").html(d.status)
+					d3.select(this).append("td").attr("class", function(d){
+																			return d.status;
+																	}).html(d.status);
 					d3.select(this).append("td").html(formatDate(new Date(d.date_opened)))
 					d3.select(this).append("td").html(function(){
 						if (!(d.last_updated)){ 
@@ -776,11 +788,38 @@ function populateInfoStat(divId, dataset){
 function updateInfoStat(divId, dataset, dataType){
 	var count = 0;
 	if (dataType == "all") {
+		if (divId == "info2"){
+			//count CV folders (unique cases with deficincies)
+			var cvCaseArray = [];
+			for (var i = 0; i < data2.length; i++) { //for every case with a deficiency
+				var id = data2[i].folder_id;
+				if (cvCaseArray.indexOf(id) < 0) { //if the folder id is not in the novCaseArray
+						cvCaseArray.push(id); //add the id to the cv case array
+				}
+			}
+			dataset = cvCaseArray; //replace the dataset with cv case array, which will be the basis of the violations info stat
+			console.log(dataset.length);
+		}
 		count = dataset.length;
 	} else {
-		for (var i = 0; i < dataset.length; i++){
-			if(dataset[i].property_type == dataType){
-				count +=1;
+		if (divId == "info2"){
+			var cvCaseArray = [];
+			for (var i = 0; i < dataset.length; i++){
+				if(dataset[i].property_type == dataType){
+					var id = data2[i].folder_id;
+					if (cvCaseArray.indexOf(id) < 0) { //if the folder id is not in the novCaseArray
+						cvCaseArray.push(id); //add the id to the cv case array
+					}
+				}
+			}
+			count = cvCaseArray.length;
+			console.log(count);
+		}
+		if (divId == "info1"){
+			for (var i = 0; i < dataset.length; i++){
+				if(dataset[i].property_type == dataType){
+					count +=1;
+				}
 			}
 		}
 	}
@@ -800,3 +839,5 @@ function compare(a,b) {  //for sorting dataobjects for table population - not cu
     return 1;
   return 0;
 }
+
+//d3.selectAll(".tableRow").style("background-color", "#f5c9d3")
