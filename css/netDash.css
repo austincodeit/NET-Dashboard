@@ -99,7 +99,6 @@ text.info {
 
 }
 
-
 div.tooltip {   
   position: absolute;           
   text-align: center;                       
@@ -120,4 +119,19 @@ div.tooltip {
 
 table {
 	background-color: #ccccc
+}
+
+td.Active{
+	color: #e41a1c;
+	font-weight: bold;
+}
+
+td.Closed {
+	color: #4daf4a;
+	font-weight: bold;
+}
+
+td.Pending{
+	color: #984ea3;
+	font-weight: bold;
 }
