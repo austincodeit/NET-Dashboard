@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+	<title>NET Map v1.2</title>
+    <link rel="icon" href="../../favicon.ico">
+    <!-- Bootstrap core CSS -->
+    <link href="./css/bootstrap.css" rel="stylesheet">
+	
+	<!-- Awesome map markers -->
+	<link rel="stylesheet" href="css/leaflet.awesome-markers.css">
+
+	<!-- NET Dashboard Style -->
+	<link href="./css/netdash.css" rel="stylesheet">
+	<link href="./css/leaflet.css" rel="stylesheet">
+
+  </head>
+	<style>
+	
+	html,body{
+		height:100%;
+		padding-top: 25px;
+		
+	}
+
+	.container {
+		height:100%;
+	}
+	
+	#map  { 
+		min-height: 100%;
+	}
+	
+	</style>
+  <body>
+	
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+		  <a class="navbar-brand" href="#">NET</a>
+		  				  <!-- Single button -->
+				 
+				<div class="btn-group navbar-btn"> <!-- navbar-btn keeps class in line with navbar -->
+				  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Status
+					<span class="caret"></span>
+
+				  </button>
+				  <ul class="dropdown-menu status">
+					<li name=all><a href="#"><b>Status</b></a></li>
+					<li name=Active> <a  href="#">Active</a></li>
+					<li name=Closed><a  href="#">Closed</a></li>
+					<li name=Pending><a  href="#">Pending</a></li>
+				  </ul>
+				</div>
+				<div class="btn-group navbar-btn"> <!-- navbar-btn keeps class in line with navbar -->
+				  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Reported Violation
+					<span class="caret"></span>
+				  </button>
+				  <ul class="dropdown-menu primary_reported_violation">
+					<li name=all><a href="#"><b>Reported Violation</b></a></li>
+					<li name="Structure Condition Violation(s)"> <a  href="#">Structure Condition <span class="glyphicon glyphicon-home" aria-hidden="true"></span></a></li>
+					<li name="Property Abatement"><a  href="#">Property Abatement <span class="glyphicon glyphicon-trash" aria-hidden="true"></a></span></li>
+					<li name="Land Use Violation(s)"><a  href="#">Land Use <span class="glyphicon glyphicon-flag" aria-hidden="true"></span></a></li>
+					<li name="Work Without Permit"><a  href="#">Work Without Permit <span class="glyphicon glyphicon-wrench" aria-hidden="true"></a></span></li>
+				  </ul>
+				</div>
+				<div class="btn-group navbar-btn"> <!-- navbar-btn keeps class in line with navbar -->
+				  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Case Type
+					<span class="caret"></span>
+				  </button>
+				  <ul class="dropdown-menu hasCV">
+					<li name=all><a href="#"><b>Case Type</b></a></li>
+					<li name=true> <a  href="#">Violation Cases Only</a></li>
+				  </ul>
+				</div>
+				<div class="btn-group button" data-toggle="buttons">
+				  <p class="navbar-btn">
+				  <button type="button" class="btn btn-warning reset">Reset</button>
+				  </p>
+				</div>
+		  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		  </button>
+		</div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a class="navbar-brand" href="http://coacode.coacd.org/net" ><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Dashboard</a></li>
+            <li><a class="navbar-brand" href="http://coacode.coacd.org/net/net_map.html"><span class="glyphicon glyphicon glyphicon-map-marker" aria-hidden="true"></span> Map</a></li>
+            <li><a class="navbar-brand" navbar-brand href="#"><span class="glyphicon glyphicon glyphicon-home" aria-hidden="true"></span> Home</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+	<div class="span5 fill" id=map>
+	
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="./js/jquery1.11.1.js"></script>
+	<script src="./js/bootstrap.min.js"></script>
+	<script src="./js/leaflet.js"></script>
+	<script src="./js/leaflet.awesome-markers.min.js"></script>
+	<script src="./js/netMap.js"></script>
+  </body>
+</html>
