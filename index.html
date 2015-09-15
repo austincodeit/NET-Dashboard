@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Created by John Clary for the Austin Code Department, July, 2015 -->
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -9,17 +10,21 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>NET Dashboard</title>
+    <title>NET Dashboard v1.2</title>
 
     <!-- Bootstrap core CSS -->
     <link href="./css/bootstrap.css" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
+    
+	    <!-- Custom styles for this template -->
     <link href="./css/jumbotron.css" rel="stylesheet">
 
+	<!-- datatables Style -->
+	<link href="./css/jquery.dataTables.min.css" rel="stylesheet">
 	<!-- NET Dashboard Style -->
 	<link href="./css/netdash.css" rel="stylesheet">
-
+	<!-- font awesome -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+	
   </head>
 
   <body>
@@ -27,36 +32,35 @@
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
-		<div class="btn-group button" data-toggle="buttons">
-					  <p class="navbar-btn">
-					  <label class="btn btn-primary">
-						<input id=all type="radio" name="options" autocomplete="off"> All
-					  </label>
-					  <label class="btn btn-primary">
-						<input id=Neighborhood type="radio" name="options" autocomplete="off"> Single Family
-					  </label>
-					  <label class="btn btn-primary">
-						<input id=Multifamily type="radio" name="options"  autocomplete="off"> Multifamily
-					  </label>
-					  <label class="btn btn-primary">
-						<input id=Commercial type="radio" name="options" autocomplete="off"> Commercial
-					  </label>
-					  </p>
-				</div>
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-		  <a class="navbar-brand" href="#">NET Dash v1.0</a>
-		  
-        </div>
+			<div class="btn-group navbar-btn"> <!-- navbar-btn keeps class in line with navbar -->
+				  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Property Type <span class="caret"></span>
+				  </button>
+				  <ul class="dropdown-menu property_type">
+					<li name=all><a  href="#"><b>Property Type</b></a></li>
+					<li name=Neighborhood ><a href="#">Single Family</a></li>
+					<li name=Multifamily ><a href="#">Multifamily</a></li>
+					<li name=Commercial ><a href="#">Commercial</a></li>
+				  </ul>
+			</div>
+			<div class="btn-group button" data-toggle="buttons">
+				  <p class="navbar-btn">
+				  <button type="button" class="btn btn-warning reset">Reset</button>
+				  </p>
+			</div>
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+		  <a class="navbar-brand" href="#">NET</a>
+	</div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a class="navbar-brand" navbar-brand href="#">NET Home</a></li>
-            <li><a class="navbar-brand" href="#">Map</a></li>
-            <li><a class="navbar-brand" href="https://www.austintexas.gov/department/code"  target="_blank">Austin Code</a></li>
+            <li><a class="navbar-brand" href="http://coacode.coacd.org/net" ><span class="glyphicon glyphicon glyphicon-stats" aria-hidden="true"></span> Dashboard</a></li>
+            <li><a class="navbar-brand" href="http://coacode.coacd.org/net/net_map.html"><span class="glyphicon glyphicon glyphicon-map-marker" aria-hidden="true"></span> Map</a></li>
+            <li><a class="navbar-brand" navbar-brand href="#"><span class="glyphicon glyphicon glyphicon-home" aria-hidden="true"></span> Home</a></li>
           </ul>
         </div>
       </div>
@@ -64,25 +68,33 @@
 	
      <div class="container">
 	  <div class="row">
+		
 		 <div class="col-md-4 chart pie" id=chart_3>
-          <h2>Case Status</h2>
+		 
+          <h2>
+			Case Status <small><small><i  class="fa fa-info-circle"data-toggle="tooltip" data-placement="right" title="The status of NET code complaint ('CC') cases. Code complaint cases indicate a reported violation that must be investigated by a Code Officer, who determines if violations are present. "></i></small></small>
+		  </h2>
+			
+		 
         </div>
 		<div class="col-md-4 info" id=info1>
-          <h2>Total Cases</h2>
+          <h2>Total Cases <small><small><i  class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" title="The total number of NET code complaint ('CC') cases" ></i></small></small></h2>
         </div>
         <div class="col-md-4 info" id=info2>
-          <h2>Deficiencies Found</h2>
+          <h2>Violation Cases <small><small><i  class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" title="The total number of NET violation cases ('CV's). Violation cases are created when a Code Officer determines there are code violations at a property " ></i></small></small>
+		  </h2>
         </div>
 	</div>
       <div class="row">
         <div class="col-md-4 chart stacked-bar" id=chart_4>
-          <h2>Status Change by Week</h2>
+          <h2>Status Change by Week <small><small><i  class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" title="The ratio of closed / active / pending cases grouped in 7-day intervals"></i></small></small>
+		  </h2>
         </div>
 		<div class="col-md-4 chart stacked-bar" id=chart_1>
-          <h2>Cases by Violation Type</h2>
+          <h2>Reported Violations <small><small><i  class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" title="The primarty reported violation of NET code complaint ('CC') cases" ></i></small></small></h2>
         </div>
 		<div class="col-md-4 chart stacked-bar" id=chart_2>
-          <h2>Cases by Deficiency Type</h2>
+          <h2>Deficiencies Found <small><small><i  class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" title="The deficiencies found at properties with code violation cases ('CVs'). A single violation case may have multiple deficiencies." ></i></small></small></h2>
         </div>
       </div>
 
@@ -90,7 +102,7 @@
 	  <!-- TABLE TIME -->
 		<h2 class="sub-header">Case Data</h2>
           <div class="table-responsive">
-            <table class="table table-striped table-hover" data-sort-name="address" data-sort-order="desc">
+            <table class="table table-striped table-hover" data-sort-name="address" data-sort-order="desc" id="caseTable">
               <thead>
                 <tr>
                   <th>Case Number</th>
@@ -98,6 +110,7 @@
 				  <th>Property Type</th>
 					<th>Primary Violation</th>
                   <th>Case Status</th>
+				  <th>Assigned Officer</th>
                   <th>Date Opened</th>
 				  <th>Last Updated</th>
                 </tr>
@@ -112,21 +125,18 @@
 		<div class=tooltip></div>
 		
       <hr>
-
       <footer>
         <p>Created by John Clary for the City of Austin Code Department; July 2015</p>
       </footer>
     </div> <!-- /container -->
 	
-
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src=".js/bootstrap.js"></script>
     <script src="./js/jquery1.11.1.js"></script>
+	<script src="./js/bootstrap.min.js"></script>
+	<script src="./js/jquery.dataTables.min.js"></script>
 	<script src="./js/d3.js"></script>
-	<script src="./js/net_dash_v1.0.js"></script>
-	<script src="./js/d3-bootstrap.min.js"></script>
-	<script src="./js/leaflet.js"></script>
-	
+	<script src="./js/net_dash.js"></script>
+	<!-- <script src="./js/d3-bootstrap.min.js"></script> -->
+
 	<script>
 	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

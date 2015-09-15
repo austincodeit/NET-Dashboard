@@ -1,19 +1,21 @@
 //Created by John Clary for the City of Austin Code Department - July 2015
+
+browserAlert();
+
 //globals
 var data1, data2, pie, pie2, arc, pctClosed;
-var cc_mf = [], cc_com = [], cc_nbhd = [], def_com = [], def_mf = [], def_nbhd=[];
-var dataPicker = {"CCs":{}, "Defs":{}};
+var dataPicker = {"CCs":{}, "CVs":{},"Defs":{}};
 
 //constants
 var margin = {
 	top: 10,
 	right: 10,
 	bottom: 80,
-	left: 40
+	left: 55
 };
 
-var width = 300 - margin.left - margin.right,
-	height = 300 - margin.top - margin.bottom;
+var width = 325 - margin.left - margin.right,
+	height = 325 - margin.top - margin.bottom;
 	
 var statusList = ["Active", "Closed", "Pending"];  //this is also the order in which bars are drawn and updated..any additional status must be hardcoded here and added in the groupdata function
 var typeList = ["Multifamily", "Commercial", "Neighborhood"]; //capitalized because these types are capitalized in raw data
@@ -41,8 +43,8 @@ String.prototype.trunc =
 getCases();
 
 //listeners
-d3.selectAll("input").on("click", function(d){
-	dataType = d3.select(this).attr("id");
+$( ".property_type" ).children().click(function() {
+	var dataType = $(this).attr("name");
 	updateBarChart("chart_1", dataPicker.CCs.violations[dataType], 750, scaleDict.chart_1); //HARDCODING :(
 	updateBarChart("chart_2", dataPicker.Defs.violations[dataType], 750, scaleDict.chart_2);
 	updateBarChart("chart_4", dataPicker.Time[dataType], 750, scaleDict.chart_4);
@@ -50,7 +52,22 @@ d3.selectAll("input").on("click", function(d){
 	updateInfoStat("info1", data1, dataType);
 	updateInfoStat("info2", data2, dataType);
 	updateTable(dataType);
-})
+});
+
+$( ".reset" ).click(function() { //on reset button click
+
+	var selText = $('.property_type').children().first().text() //get first name on drop-down list
+	$('.property_type').closest('div').find('button[data-toggle="dropdown"]').html(selText + ' <span class="caret"></span>'); // and propogate it
+
+		var dataType = "all";
+	updateBarChart("chart_1", dataPicker.CCs.violations[dataType], 750, scaleDict.chart_1); //HARDCODING :(
+	updateBarChart("chart_2", dataPicker.Defs.violations[dataType], 750, scaleDict.chart_2);
+	updateBarChart("chart_4", dataPicker.Time[dataType], 750, scaleDict.chart_4);
+	updatePieChart(dataType, dataPicker.CCs.statuses, 750);
+	updateInfoStat("info1", data1, dataType);
+	updateInfoStat("info2", data2, dataType);
+	updateTable(dataType);
+});
 
 //tooltips
 var div = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0);
@@ -98,7 +115,7 @@ d3.selectAll(".stacked-bar").selectAll("rect").on("mouseover", function(d) {
 		
 		div.transition().duration(200).style("opacity", .8); 
 		
-		div.html(value + " " + status + " (" + formatPct(value/total) + ")" + "<br>" + xLabel)
+		div.html(xLabel + "<br>" + value + " " + status + " (" + formatPct(value/total) + ")")
 			.style("left", (d3.event.pageX + 10) + "px")
 			.style("top", (d3.event.pageY - 35) + "px"); 
 			
@@ -154,7 +171,7 @@ function getEvents(){
 }
 
 function groupDataObjects(){  // see http://learnjsdata.com/group_data.html
-	//for a stack of active/closed, you need an array length two: first object is arrays for active, second is arrays for closed. arrays must be SAME LENGTH!
+	//for a stack of active/closed, you need an array length three: first object is arrays for active, second is arrays for closed, third pending. arrays must be SAME LENGTH!
 	///////CC Violation Types////////
 	dataPicker.CCs["violations"] = {};
 	//this is the all CC violation type...
@@ -162,15 +179,15 @@ function groupDataObjects(){  // see http://learnjsdata.com/group_data.html
 		.key(function(d) { return d.status; }) //status is highest level obj
 		.key(function(d) { return d.primary_reported_violation; }) //within status is each violation type
 		.rollup(function(v) { return v.length; }) //rolling up the number of records for each violation type/status
-		.map(data1);//note that .map gives you key:value compared to .entries which gives you key: [the key], value: [the value]
-	
+		.map(data1);//note that .map() gives you key:value compared to .entries() which gives you key: [the key], value: [the value]
+
 	//..and this is CC violation type propety type
 	var primaryViolationStatusCountProperty= d3.nest()
 		.key(function(d) { return d.property_type; }) //property is highest level obj
 		.key(function(d) { return d.status; }) //then status 
 		.key(function(d) { return d.primary_reported_violation; }) //within status is each violation type
 		.rollup(function(v) { return v.length; }) //rolling up the number of records for each violation type/status
-		.map(data1);//note that .map gives you key:value compared to .entries which gives you key: [the key], value: [the value]
+		.map(data1);
 	
 	//send 'all' cc violations status to datapicker
 	makeObjectsEqual(primaryViolationStatusCount, 1); // "1" flag means a keylist will be generate from this go-through <<<<<< COULD THIS BREAK IF IT DOES NOT PROCESS BEFORE NEXT BLOCK OF CODE??
@@ -182,7 +199,7 @@ function groupDataObjects(){  // see http://learnjsdata.com/group_data.html
 		makeObjectsEqual(temp);
 		dataPicker.CCs["violations"][typeList[i]] = formatForD3Stack(temp);
 	}
-
+	
 	/////Deficiency Types/////		
 	dataPicker.Defs["violations"] = {};
 	//This is the all deficiency type object....
@@ -726,7 +743,8 @@ function populateTable(){
 					d3.select(this).append("td").html(d.address);
 					d3.select(this).append("td").html(d.property_type);
 					d3.select(this).append("td").html(d.primary_reported_violation);
-					d3.select(this).append("td").html(d.status);
+					d3.select(this).append("td").attr("class", d.status).html(d.status);
+					d3.select(this).append("td").html("Suzie Q. Inspector");
 					d3.select(this).append("td").html(formatDate(new Date(d.date_opened)));
 					d3.select(this).append("td").html(function(){
 						if (!(d.last_updated)){ 
@@ -737,10 +755,17 @@ function populateTable(){
 					})
 			})
 	//d3.select(this).append("td").html(d3.round(((new Date()) - (new Date(d.last_updated * 1000))) / (1000*60*60*24)) + " days ago");
+	
+	//activate sorting/search functionality
+	$(document).ready(function(){
+		$('#caseTable').DataTable(
+			{paging: false}
+		);
+	});
 }//end populateTable
 
 function updateTable(dataType){
-		d3.select("tbody").selectAll("tr").selectAll("td").remove()
+	d3.select("tbody").selectAll("tr").selectAll("td").remove()
 	
 	d3.select("tbody").selectAll("tr")
 		.filter(function(d){
@@ -755,7 +780,8 @@ function updateTable(dataType){
 					d3.select(this).append("td").html(d.address);
 					d3.select(this).append("td").html(d.property_type);
 					d3.select(this).append("td").html(d.primary_reported_violation)
-					d3.select(this).append("td").html(d.status)
+					d3.select(this).append("td").attr("class", d.status).html(d.status);
+					d3.select(this).append("td").html("Suzie Q. Inspector");
 					d3.select(this).append("td").html(formatDate(new Date(d.date_opened)))
 					d3.select(this).append("td").html(function(){
 						if (!(d.last_updated)){ 
@@ -776,11 +802,36 @@ function populateInfoStat(divId, dataset){
 function updateInfoStat(divId, dataset, dataType){
 	var count = 0;
 	if (dataType == "all") {
+		if (divId == "info2"){
+			//count CV folders (unique cases with deficincies)
+			var cvCaseArray = [];
+			for (var i = 0; i < data2.length; i++) { //for every case with a deficiency
+				var id = data2[i].folder_id;
+				if (cvCaseArray.indexOf(id) < 0) { //if the folder id is not in the novCaseArray
+						cvCaseArray.push(id); //add the id to the cv case array
+				}
+			}
+			dataset = cvCaseArray; //replace the dataset with cv case array, which will be the basis of the violations info stat
+		}
 		count = dataset.length;
 	} else {
-		for (var i = 0; i < dataset.length; i++){
-			if(dataset[i].property_type == dataType){
-				count +=1;
+		if (divId == "info2"){
+			var cvCaseArray = [];
+			for (var i = 0; i < dataset.length; i++){
+				if(dataset[i].property_type == dataType){
+					var id = data2[i].folder_id;
+					if (cvCaseArray.indexOf(id) < 0) { //if the folder id is not in the novCaseArray
+						cvCaseArray.push(id); //add the id to the cv case array
+					}
+				}
+			}
+			count = cvCaseArray.length;
+		}
+		if (divId == "info1"){
+			for (var i = 0; i < dataset.length; i++){
+				if(dataset[i].property_type == dataType){
+					count +=1;
+				}
 			}
 		}
 	}
@@ -800,3 +851,19 @@ function compare(a,b) {  //for sorting dataobjects for table population - not cu
     return 1;
   return 0;
 }
+
+
+function browserAlert() { 
+	if((navigator.userAgent.indexOf("MSIE") != -1 ) || (!!document.documentMode == true )) //IF IE > 10
+	{
+	  alert('The NET Dashboard is not designed for Internet Explorer. Switch to Firefox or Chrome browser for optimal viewing'); 
+	}  
+}
+
+
+//change drop-downs to selects
+//see here: http://stackoverflow.com/questions/18150954/how-can-i-render-a-list-select-box-dropdown-with-bootstrap			
+$(".dropdown-menu li a").click(function(){
+    var selText = $(this).text();
+    $(this).closest('div').find('button[data-toggle="dropdown"]').html(selText + ' <span class="caret"></span>');
+});
