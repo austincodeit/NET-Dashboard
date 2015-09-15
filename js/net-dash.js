@@ -263,14 +263,6 @@ function groupDataObjects(){  // see http://learnjsdata.com/group_data.html
 	}
 	makePieChart(dataPicker.CCs.statuses, "chart_3", 0);
 	
-	//Pie Chart by Property Type....NOT CREATING THIS CHART CURRENTLY
-	dataPicker.CCs["typeCounts"] = [];
-	var statusCountType = d3.nest().key(function(d) { return d.property_type; }) .rollup(function(v) { return v.length; })	.map(data1);
-	for (var i = 0; i < typeList.length; i++){
-		temp = {"status": typeList[i],"all":statusCountType[typeList[i]]}
-		dataPicker.CCs.typeCounts.push(temp);
-	}
-	
 	//dummying up for event transitions
 	for (var i = 0; i < typeList.length;i++) {
 		counter = 0; 
