@@ -871,7 +871,7 @@ function populateTable() {
 		d3.select(this).append("td").html(d.case_type);
 		d3.select(this).append("td").html(d.primary_reported_violation);
 		d3.select(this).append("td").attr("class", d.status).html(d.status);
-		d3.select(this).append("td").html("d.inspector_name");
+		d3.select(this).append("td").html(d.inspector_name);
 		d3.select(this).append("td").html(formatDate(new Date(d.date_opened)));
 		d3.select(this).append("td").html(function () {
 			if (!(d.last_update)) {
@@ -908,7 +908,7 @@ function updateTable(dataType) {
 		d3.select(this).append("td").html(d.case_type);
 		d3.select(this).append("td").html(d.primary_reported_violation)
 		d3.select(this).append("td").attr("class", d.status).html(d.status);
-		d3.select(this).append("td").html("d.inspector_name");
+		d3.select(this).append("td").html(d.inspector_name);
 		d3.select(this).append("td").html(formatDate(new Date(d.date_opened)))
 		d3.select(this).append("td").html(function () {
 			if (!(d.last_update)) {
