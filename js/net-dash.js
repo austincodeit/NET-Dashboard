@@ -29,8 +29,8 @@ var scaleDict = {
 	"chart_2" : "",
 	"chart_4" : ""
 };
-var serviceUrl_cases = "https://data.austintexas.gov/resource/2k49-v9jb.json";
-var serviceUrl_deficiencies = "https://data.austintexas.gov/resource/73wi-y5aa.json";
+var serviceUrl_cases = "https://data.austintexas.gov/resource/37zz-93tg.json";
+var serviceUrl_deficiencies = "https://data.austintexas.gov/resource/p4pj-6q8i.json";
 //var serviceUrl_cases = "./data/cases.json"; //for offline testing
 //var serviceUrl_deficiencies = "./data/defs.json";
 var formatPct = d3.format("%");
@@ -52,7 +52,7 @@ function (n, useWordBoundary) {
 getCases();
 
 //listeners
-$(".property_type").children().click(function () {
+$(".case_type").children().click(function () {
 	var dataType = $(this).attr("name");
 	updateBarChart("chart_1", dataPicker.CCs.violations[dataType], 750, scaleDict.chart_1); //HARDCODING :(
 	updateBarChart("chart_2", dataPicker.Defs.violations[dataType], 750, scaleDict.chart_2);
@@ -65,8 +65,8 @@ $(".property_type").children().click(function () {
 
 $(".reset").click(function () { //on reset button click
 
-	var selText = $('.property_type').children().first().text() //get first name on drop-down list
-		$('.property_type').closest('div').find('button[data-toggle="dropdown"]').html(selText + ' <span class="caret"></span>'); // and propogate it
+	var selText = $('.case_type').children().first().text() //get first name on drop-down list
+		$('.case_type').closest('div').find('button[data-toggle="dropdown"]').html(selText + ' <span class="caret"></span>'); // and propogate it
 
 	var dataType = "all";
 	updateBarChart("chart_1", dataPicker.CCs.violations[dataType], 750, scaleDict.chart_1); //HARDCODING :(
@@ -199,7 +199,7 @@ function groupDataObjects() { // see http://learnjsdata.com/group_data.html
 	//..and this is CC violation type propety type
 	var primaryViolationStatusCountProperty = d3.nest()
 		.key(function (d) {
-			return d.property_type;
+			return d.case_type;
 		}) //property is highest level obj
 		.key(function (d) {
 			return d.status;
@@ -223,38 +223,38 @@ function groupDataObjects() { // see http://learnjsdata.com/group_data.html
 		dataPicker.CCs["violations"][typeList[i]] = formatForD3Stack(temp);
 	}
 
-	/////Deficiency Types/////
+	/////categorydesc Types/////
 	dataPicker.Defs["violations"] = {};
-	//This is the all deficiency type object....
+	//This is the all categorydesc type object....
 	deficiencyStatusCount = d3.nest()
 		.key(function (d) {
 			return d.status;
 		}) //status is highest level obj
 		.key(function (d) {
-			return d.deficiency;
+			return d.categorydesc;
 		}) //within status is each violation type
 		.rollup(function (v) {
 			return v.length;
 		}) //rolling up the number of records for each violation type/status
 		.map(data2); //note that .map gives you key:value compared to .entries which gives you key: [the key], value: [the value]
 
-	//And this is deficiency types by property type
+	//And this is categorydesc types by property type
 	deficiencyStatusCountProperty = d3.nest()
 		.key(function (d) {
-			return d.property_type;
+			return d.case_type;
 		}) //status is highest level obj
 		.key(function (d) {
 			return d.status;
 		}) //status is highest level obj
 		.key(function (d) {
-			return d.deficiency;
+			return d.categorydesc;
 		}) //within status is each violation type
 		.rollup(function (v) {
 			return v.length;
 		}) //rolling up the number of records for each violation type/status
 		.map(data2); //note that .map gives you key:value compared to .entries which gives you key: [the key], value: [the value]
 
-	makeObjectsEqual(deficiencyStatusCount, 1); //make deficiency object equal and generate new key list (hence the '1' flag)
+	makeObjectsEqual(deficiencyStatusCount, 1); //make categorydesc object equal and generate new key list (hence the '1' flag)
 	dataPicker.Defs["violations"]["all"] = formatForD3Stack(deficiencyStatusCount);
 
 	for (var i = 0; i < typeList.length; i++) {
@@ -269,7 +269,7 @@ function groupDataObjects() { // see http://learnjsdata.com/group_data.html
 
 	/////Overall Status Count (for pie chart)/////
 	//This is the all status type object....
-	statusCountCC = d3.nest()
+	var statusCountCC = d3.nest()
 		.key(function (d) {
 			return d.status;
 		})
@@ -281,7 +281,7 @@ function groupDataObjects() { // see http://learnjsdata.com/group_data.html
 	//status by property type
 	statusCountCCProperty = d3.nest()
 		.key(function (d) {
-			return d.property_type;
+			return d.case_type;
 		})
 		.key(function (d) {
 			return d.status;
@@ -319,7 +319,7 @@ function groupDataObjects() { // see http://learnjsdata.com/group_data.html
 	//Pie Chart by Property Type....NOT CREATING THIS CHART CURRENTLY
 	dataPicker.CCs["typeCounts"] = [];
 	var statusCountType = d3.nest().key(function (d) {
-			return d.property_type;
+			return d.case_type;
 		}).rollup(function (v) {
 			return v.length;
 		}).map(data1);
@@ -375,8 +375,10 @@ function makeObjectsEqual(dataObject, keyListReference) { //make all nested obje
 			}
 		}
 	}
+	console.log(dataObject);
 	//make sure there is an object for every status type
 	for (var z = 0; z < statusList.length; z++) { //for all statues
+
 		if (!(statusList[z]in dataObject)) { //check for each status object
 			dataObject[statusList[z]] = {}; //add empty status object if it doesn't exist
 		}
@@ -384,7 +386,7 @@ function makeObjectsEqual(dataObject, keyListReference) { //make all nested obje
 
 	//make sure same set of  keys exists in both active and status objects
 	for (var i in dataObject) { //for every status key object key in the object
-		for (var q = 0; q < keyList.length; q++) { //for every type key in key list (violation type or deficiency)
+		for (var q = 0; q < keyList.length; q++) { //for every type key in key list (violation type or categorydesc)
 			if (!(keyList[q]in dataObject[i])) { //if the key is not in the object
 				dataObject[i][keyList[q]] = 0; //add the key and value is 0;
 			}
@@ -747,8 +749,8 @@ function prepareTimeStackChart(dataset) {
 		var status = dataset[i].status;
 		var openedDay = new Date(dataset[i].date_opened)
 			var lastUpdated;
-		if (dataset[i].last_updated) {
-			lastUpdated = new Date(dataset[i].last_updated * 1000) //need to replace with closed date
+		if (dataset[i].last_update) {
+			lastUpdated = new Date(dataset[i].last_update) //need to replace with closed date
 		} else {
 			lastUpdated = openedDay;
 		} //if case has never been updated, last update is opened date
@@ -786,14 +788,14 @@ function prepareTimeStackChart(dataset) {
 	}
 	for (var i = 0; i < dataset.length; i++) {
 		var status = dataset[i].status;
-		var propertyType = dataset[i].property_type;
+		var propertyType = dataset[i].case_type;
 		if (propertyType == "N/A") {
 			continue;
 		};
 		var openedDay = new Date(dataset[i].date_opened)
 			var lastUpdated;
-		if (dataset[i].last_updated) {
-			lastUpdated = new Date(dataset[i].last_updated * 1000) //need to replace with closed date
+		if (dataset[i].last_update) {
+			lastUpdated = new Date(dataset[i].last_update) //need to replace with closed date
 		} else {
 			lastUpdated = openedDay;
 		} //if case has never been updated, last update is opened date
@@ -864,22 +866,22 @@ function populateTable() {
 
 	d3.select("tbody").selectAll("tr")
 	.each(function (d) {
-		d3.select(this).append("td").html(d.case_number);
+		d3.select(this).append("td").html(d.casenumber);
 		d3.select(this).append("td").html(d.address);
-		d3.select(this).append("td").html(d.property_type);
+		d3.select(this).append("td").html(d.case_type);
 		d3.select(this).append("td").html(d.primary_reported_violation);
 		d3.select(this).append("td").attr("class", d.status).html(d.status);
-		d3.select(this).append("td").html(d.inspector_name);
+		d3.select(this).append("td").html("d.inspector_name");
 		d3.select(this).append("td").html(formatDate(new Date(d.date_opened)));
 		d3.select(this).append("td").html(function () {
-			if (!(d.last_updated)) {
+			if (!(d.last_update)) {
 				return ""
 			} else {
-				return d3.round(((new Date()) - (new Date(d.last_updated * 1000))) / (86400000)) + " days ago"; //today's date minus last updated divided my number of miliseconds in a day
+				return d3.round(((new Date()) - (new Date(d.last_update))) / (86400000)) + " days ago"; //today's date minus last updated divided my number of miliseconds in a day
 			}
 		})
 	})
-	//d3.select(this).append("td").html(d3.round(((new Date()) - (new Date(d.last_updated * 1000))) / (1000*60*60*24)) + " days ago");
+	//d3.select(this).append("td").html(d3.round(((new Date()) - (new Date(d.last_update * 1000))) / (1000*60*60*24)) + " days ago");
 
 	//activate sorting/search functionality
 	$(document).ready(function () {
@@ -897,22 +899,22 @@ function updateTable(dataType) {
 		if (dataType == "all") {
 			return true;
 		} else {
-			return d.property_type == dataType;
+			return d.case_type == dataType;
 		}
 	})
 	.each(function (d) {
-		d3.select(this).append("td").html(d.case_number);
+		d3.select(this).append("td").html(d.casenumber);
 		d3.select(this).append("td").html(d.address);
-		d3.select(this).append("td").html(d.property_type);
+		d3.select(this).append("td").html(d.case_type);
 		d3.select(this).append("td").html(d.primary_reported_violation)
 		d3.select(this).append("td").attr("class", d.status).html(d.status);
-		d3.select(this).append("td").html("Suzie Q. Inspector");
+		d3.select(this).append("td").html("d.inspector_name");
 		d3.select(this).append("td").html(formatDate(new Date(d.date_opened)))
 		d3.select(this).append("td").html(function () {
-			if (!(d.last_updated)) {
+			if (!(d.last_update)) {
 				return ""
 			} else {
-				return d3.round(((new Date()) - (new Date(d.last_updated * 1000))) / (86400000)) + " days ago"; //today's date minus last updated divided my number of miliseconds in a day
+				return d3.round(((new Date()) - (new Date(d.last_update))) / (86400000)) + " days ago"; //today's date minus last updated divided my number of miliseconds in a day
 			}
 		})
 	})
@@ -930,8 +932,8 @@ function updateInfoStat(divId, dataset, dataType) {
 		if (divId == "info2") {
 			//count CV folders (unique cases with deficincies)
 			var cvCaseArray = [];
-			for (var i = 0; i < data2.length; i++) { //for every case with a deficiency
-				var id = data2[i].folder_id;
+			for (var i = 0; i < data2.length; i++) { //for every case with a categorydesc
+				var id = data2[i].folderrsn;
 				if (cvCaseArray.indexOf(id) < 0) { //if the folder id is not in the novCaseArray
 					cvCaseArray.push(id); //add the id to the cv case array
 				}
@@ -943,8 +945,8 @@ function updateInfoStat(divId, dataset, dataType) {
 		if (divId == "info2") {
 			var cvCaseArray = [];
 			for (var i = 0; i < dataset.length; i++) {
-				if (dataset[i].property_type == dataType) {
-					var id = data2[i].folder_id;
+				if (dataset[i].case_type == dataType) {
+					var id = data2[i].folderrsn;
 					if (cvCaseArray.indexOf(id) < 0) { //if the folder id is not in the novCaseArray
 						cvCaseArray.push(id); //add the id to the cv case array
 					}
@@ -954,7 +956,7 @@ function updateInfoStat(divId, dataset, dataType) {
 		}
 		if (divId == "info1") {
 			for (var i = 0; i < dataset.length; i++) {
-				if (dataset[i].property_type == dataType) {
+				if (dataset[i].case_type == dataType) {
 					count += 1;
 				}
 			}
@@ -970,9 +972,9 @@ function updateInfoStat(divId, dataset, dataType) {
 }
 
 function compare(a, b) { //for sorting dataobjects for table population - not currently used
-	if (a.property_type < b.property_type)
+	if (a.case_type < b.case_type)
 		return -1;
-	if (a.property_type > b.property_type)
+	if (a.case_type > b.case_type)
 		return 1;
 	return 0;
 }
