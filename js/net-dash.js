@@ -29,8 +29,8 @@ var scaleDict = {
 	"chart_2" : "",
 	"chart_4" : ""
 };
-var serviceUrl_cases = "https://data.austintexas.gov/resource/2k49-v9jb.json";
-var serviceUrl_deficiencies = "https://data.austintexas.gov/resource/73wi-y5aa.json";
+var serviceUrl_cases = "https://data.austintexas.gov/resource/37zz-93tg.json";
+var serviceUrl_deficiencies = "https://data.austintexas.gov/resource/p4pj-6q8i.json";
 //var serviceUrl_cases = "./data/cases.json"; //for offline testing
 //var serviceUrl_deficiencies = "./data/defs.json";
 var formatPct = d3.format("%");
@@ -750,7 +750,7 @@ function prepareTimeStackChart(dataset) {
 		var openedDay = new Date(dataset[i].date_opened)
 			var lastUpdated;
 		if (dataset[i].last_update) {
-			lastUpdated = new Date(dataset[i].last_update * 1000) //need to replace with closed date
+			lastUpdated = new Date(dataset[i].last_update) //need to replace with closed date
 		} else {
 			lastUpdated = openedDay;
 		} //if case has never been updated, last update is opened date
@@ -795,7 +795,7 @@ function prepareTimeStackChart(dataset) {
 		var openedDay = new Date(dataset[i].date_opened)
 			var lastUpdated;
 		if (dataset[i].last_update) {
-			lastUpdated = new Date(dataset[i].last_update * 1000) //need to replace with closed date
+			lastUpdated = new Date(dataset[i].last_update) //need to replace with closed date
 		} else {
 			lastUpdated = openedDay;
 		} //if case has never been updated, last update is opened date
@@ -871,13 +871,13 @@ function populateTable() {
 		d3.select(this).append("td").html(d.case_type);
 		d3.select(this).append("td").html(d.primary_reported_violation);
 		d3.select(this).append("td").attr("class", d.status).html(d.status);
-		d3.select(this).append("td").html("Suzie Q. Inspector");
+		d3.select(this).append("td").html("d.inspector_name");
 		d3.select(this).append("td").html(formatDate(new Date(d.date_opened)));
 		d3.select(this).append("td").html(function () {
 			if (!(d.last_update)) {
 				return ""
 			} else {
-				return d3.round(((new Date()) - (new Date(d.last_update * 1000))) / (86400000)) + " days ago"; //today's date minus last updated divided my number of miliseconds in a day
+				return d3.round(((new Date()) - (new Date(d.last_update))) / (86400000)) + " days ago"; //today's date minus last updated divided my number of miliseconds in a day
 			}
 		})
 	})
@@ -908,13 +908,13 @@ function updateTable(dataType) {
 		d3.select(this).append("td").html(d.case_type);
 		d3.select(this).append("td").html(d.primary_reported_violation)
 		d3.select(this).append("td").attr("class", d.status).html(d.status);
-		d3.select(this).append("td").html("Suzie Q. Inspector");
+		d3.select(this).append("td").html("d.inspector_name");
 		d3.select(this).append("td").html(formatDate(new Date(d.date_opened)))
 		d3.select(this).append("td").html(function () {
 			if (!(d.last_update)) {
 				return ""
 			} else {
-				return d3.round(((new Date()) - (new Date(d.last_update * 1000))) / (86400000)) + " days ago"; //today's date minus last updated divided my number of miliseconds in a day
+				return d3.round(((new Date()) - (new Date(d.last_update))) / (86400000)) + " days ago"; //today's date minus last updated divided my number of miliseconds in a day
 			}
 		})
 	})
