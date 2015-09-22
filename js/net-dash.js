@@ -1,4 +1,7 @@
-//Created by John Clary for the City of Austin Code Department - July 2015
+//new for v1.2.3//
+//remove deprecated pie chart code
+//add cv counts to dataPicker and rework info stat functions to count from dataPicker
+//add hasCV column to table
 
 browserAlert();
 
@@ -6,9 +9,8 @@ browserAlert();
 var data1, data2, pie, pie2, arc, pctClosed;
 var dataPicker = {
 	"CCs" : {},
-	"CVs" : {},
-	"Defs" : {}
-
+	"Defs" : {},
+	"CVs" : {}
 };
 
 //constants
@@ -59,7 +61,7 @@ $(".case_type").children().click(function () {
 	updateBarChart("chart_4", dataPicker.Time[dataType], 750, scaleDict.chart_4);
 	updatePieChart(dataType, dataPicker.CCs.statuses, 750);
 	updateInfoStat("info1", data1, dataType);
-	updateInfoStat("info2", data2, dataType);
+	updateInfoStat("info2", data1, dataType);
 	updateTable(dataType);
 });
 
@@ -74,7 +76,7 @@ $(".reset").click(function () { //on reset button click
 	updateBarChart("chart_4", dataPicker.Time[dataType], 750, scaleDict.chart_4);
 	updatePieChart(dataType, dataPicker.CCs.statuses, 750);
 	updateInfoStat("info1", data1, dataType);
-	updateInfoStat("info2", data2, dataType);
+	updateInfoStat("info2", data1, dataType);
 	updateTable(dataType);
 });
 
@@ -171,10 +173,6 @@ function getEvents() {
 		'success' : function (d) {
 			data2 = d;
 			groupDataObjects();
-			// data1.sort(compare);  this messes up my statcounting for some reason...w
-			populateTable();
-			populateInfoStat("info1", data1);
-			populateInfoStat("info2", data2);
 		}
 	}); //end get data
 }
@@ -316,47 +314,28 @@ function groupDataObjects() { // see http://learnjsdata.com/group_data.html
 	}
 	makePieChart(dataPicker.CCs.statuses, "chart_3", 0);
 
-	//Pie Chart by Property Type....NOT CREATING THIS CHART CURRENTLY
-	dataPicker.CCs["typeCounts"] = [];
-	var statusCountType = d3.nest().key(function (d) {
-			return d.case_type;
-		}).rollup(function (v) {
-			return v.length;
-		}).map(data1);
-	for (var i = 0; i < typeList.length; i++) {
-		temp = {
-			"status" : typeList[i],
-			"all" : statusCountType[typeList[i]]
+	
+	//Count CVs and add to dataPicker
+	var cvList = [];
+	for (var i = 0; i < data2.length; i++){
+		var folderRsn = data2[i].folderrsn;
+		if (cvList.indexOf(folderRsn) < 0 ) {
+			cvList.push(folderRsn);
 		}
-		dataPicker.CCs.typeCounts.push(temp);
 	}
-
-	//dummying up for event transitions
-	for (var i = 0; i < typeList.length; i++) {
-		counter = 0;
-		if (i == 0) {
-			counter = 1
-		};
-		dataPicker.CCs.typeCounts[i]["fake"] = counter; //to initialize chart (active)
-		if (typeList[i] == "Multifamily") {
-			counter = 1;
-		} else {
-			counter = 0
-		};
-		dataPicker.CCs.typeCounts[i]["Multifamily"] = counter; //to handle button clicks
-		if (typeList[i] == "Commercial") {
-			counter = 1;
-		} else {
-			counter = 0
-		};
-		dataPicker.CCs.typeCounts[i]["Commercial"] = counter;
-		if (typeList[i] == "Neighborhood") {
-			counter = 1;
-		} else {
-			counter = 0
-		};
-		dataPicker.CCs.typeCounts[i]["Neighborhood"] = counter;
+	//add an attribute to cc cases (data1) indicating if the case has a CV (true) or not (false)
+	for (var q = 0; q < data1.length; q++){ //for every case
+		if (cvList.indexOf(data1[q].folderrsn) > -1 ) { //if the case folder rsn is on the cv list
+			data1[q]["hasCV"] = true;			//it has a cv
+		} else { 
+			data1[q]["hasCV"] = false;  
+		}
 	}
+	
+	//populate stats and table
+	populateTable();
+	populateInfoStat("info1", data1);
+	populateInfoStat("info2", data1);
 } //end groupDataObjects
 
 function makeObjectsEqual(dataObject, keyListReference) { //make all nested objects within an object the same length (or D3.layout.stack will fail)
@@ -375,7 +354,6 @@ function makeObjectsEqual(dataObject, keyListReference) { //make all nested obje
 			}
 		}
 	}
-	console.log(dataObject);
 	//make sure there is an object for every status type
 	for (var z = 0; z < statusList.length; z++) { //for all statues
 
@@ -871,6 +849,9 @@ function populateTable() {
 		d3.select(this).append("td").html(d.case_type);
 		d3.select(this).append("td").html(d.primary_reported_violation);
 		d3.select(this).append("td").attr("class", d.status).html(d.status);
+		d3.select(this).append("td").html(function(d){
+			return (d.hasCV == true) ? "Yes":"No";
+		})
 		d3.select(this).append("td").html(d.inspector_name);
 		d3.select(this).append("td").html(formatDate(new Date(d.date_opened)));
 		d3.select(this).append("td").html(function () {
@@ -908,6 +889,9 @@ function updateTable(dataType) {
 		d3.select(this).append("td").html(d.case_type);
 		d3.select(this).append("td").html(d.primary_reported_violation)
 		d3.select(this).append("td").attr("class", d.status).html(d.status);
+		d3.select(this).append("td").html(function(d){
+			return (d.hasCV == true) ? "Yes":"No";
+		})
 		d3.select(this).append("td").html(d.inspector_name);
 		d3.select(this).append("td").html(formatDate(new Date(d.date_opened)))
 		d3.select(this).append("td").html(function () {
@@ -931,28 +915,24 @@ function updateInfoStat(divId, dataset, dataType) {
 	if (dataType == "all") {
 		if (divId == "info2") {
 			//count CV folders (unique cases with deficincies)
-			var cvCaseArray = [];
-			for (var i = 0; i < data2.length; i++) { //for every case with a categorydesc
-				var id = data2[i].folderrsn;
-				if (cvCaseArray.indexOf(id) < 0) { //if the folder id is not in the novCaseArray
-					cvCaseArray.push(id); //add the id to the cv case array
+			for (var i = 0; i < dataset.length; i++) { //for every case with a categorydesc
+				if (dataset[i].hasCV == true){
+					count++;
 				}
+				
 			}
-			dataset = cvCaseArray; //replace the dataset with cv case array, which will be the basis of the violations info stat
+		} else {
+			count = dataset.length;
 		}
-		count = dataset.length;
 	} else {
 		if (divId == "info2") {
-			var cvCaseArray = [];
 			for (var i = 0; i < dataset.length; i++) {
 				if (dataset[i].case_type == dataType) {
-					var id = data2[i].folderrsn;
-					if (cvCaseArray.indexOf(id) < 0) { //if the folder id is not in the novCaseArray
-						cvCaseArray.push(id); //add the id to the cv case array
+					if (dataset[i].hasCV == true){
+						count++;
 					}
 				}
 			}
-			count = cvCaseArray.length;
 		}
 		if (divId == "info1") {
 			for (var i = 0; i < dataset.length; i++) {
