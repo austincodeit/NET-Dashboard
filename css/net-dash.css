@@ -135,3 +135,6 @@ td.Pending{
 	color: #984ea3;
 	font-weight: bold;
 }
+.leaflet-popup-content {
+	width: 300px;
+}

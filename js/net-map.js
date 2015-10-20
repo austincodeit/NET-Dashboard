@@ -1,5 +1,16 @@
-//created by John Clary for the Austin Code Department, Aug 2015
-//v1.2 live
+//v1.2
+//color status in filter menu
+//update github
+//should not run filter function if the filter has not changed....need to compare to existing filterList or build 'change' into the listern rather than 'click'
+//marker popup should be a variable or function to call since it's duplicated.
+//get some cool marker icons
+//filter for primary violation
+//change color for active filter
+//streetview
+//spiderify
+//clusters
+//heatmap
+//splash screen?
 
 //globals
 var map, data, data2, markers, currentFilter;
