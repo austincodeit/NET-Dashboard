@@ -1,7 +1,6 @@
-//new for v1.2.3//
-//remove deprecated pie chart code
-//add cv counts to dataPicker and rework info stat functions to count from dataPicker
-//add hasCV column to table
+//new for v1.2.4//
+//fix labels on time chart stack
+//add data refresh timestamp
 
 browserAlert();
 
@@ -33,10 +32,14 @@ var scaleDict = {
 };
 var serviceUrl_cases = "https://data.austintexas.gov/resource/37zz-93tg.json";
 var serviceUrl_deficiencies = "https://data.austintexas.gov/resource/p4pj-6q8i.json";
+var metadataUrl_cases = "https://data.austintexas.gov/api/views/37zz-93tg/rows.json"
+
 //var serviceUrl_cases = "./data/cases.json"; //for offline testing
 //var serviceUrl_deficiencies = "./data/defs.json";
 var formatPct = d3.format("%");
 var formatDate = d3.time.format("%x");
+var formatMonth = d3.time.format("%b %Y");
+var formatDateTime = d3.time.format("%e %b %Y %H:%M%p");
 var dataType = "all";
 
 //x label truncator (see: http://stackoverflow.com/questions/1199352/smart-way-to-shorten-long-strings-with-javascript)
@@ -159,6 +162,7 @@ function getCases() {
 		'success' : function (d) {
 			data1 = d;
 			getEvents();
+			getMetaData();
 		}
 	}); //end get data
 }
@@ -175,6 +179,26 @@ function getEvents() {
 			groupDataObjects();
 		}
 	}); //end get data
+}
+
+function getMetaData() {
+	// get data
+	$.ajax({
+		'async' : false,
+		'global' : false,
+		'url' : metadataUrl_cases,
+		'dataType' : "json",
+		'success' : function (d) {
+			var metadata = d;
+			postUpdateDate(metadata);
+		}
+	}); //end get data
+}
+
+function postUpdateDate(data){
+	var update_date = new Date(data.meta.view.rowsUpdatedAt * 1000);
+	var update_date = formatDateTime(update_date);
+	$('#update_date').text("Data updated " + update_date);
 }
 
 function groupDataObjects() { // see http://learnjsdata.com/group_data.html
@@ -403,7 +427,7 @@ function formatForD3Stack(dataset) {
 }
 
 function createStackChart(dataset, divId, issue) { //where issue is 'CCs' or 'Defs'
-	var alternateLabel = true; //
+	var alternateLabel = 1; //
 
 	//not used
 	var categoryCount = dataset[0].length; //get length of one of the datset arrays to determine how many columns will be created and adjust width; this is for style
@@ -443,12 +467,12 @@ function createStackChart(dataset, divId, issue) { //where issue is 'CCs' or 'De
 		.tickSize(3)
 		.tickFormat(function (d) {
 			if (divId == "chart_4") { //alternate labels for time chart
-				if (alternateLabel) {
-					alternateLabel = false;
-					var xLabel = dataset[0][d].x;
+				alternateLabel+=1;
+				if (alternateLabel == 5) {
+					alternateLabel = 1;
+					var xLabel = formatMonth(new Date(dataset[0][d].x));
 					return xLabel.trunc(10, false);
 				} else {
-					alternateLabel = true;
 					return ""
 				}
 			} else {

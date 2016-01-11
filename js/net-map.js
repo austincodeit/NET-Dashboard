@@ -144,8 +144,6 @@ function getEvents(){
 
 function makeMap(){
 	
-	L.Icon.Default.imagePath = "./images"; //leaflet didn't like the network path it was creating during testing, see (https://github.com/Leaflet/Leaflet/issues/766)
-	
 	var OSMBase = new L.TileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 			attribution: '<a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> | <a href="https://www.austintexas.gov/department/code" target=_blank>City of Austin Code Department</a>'
 		});
@@ -280,3 +278,4 @@ $(".dropdown-menu li a").click(function(){
     var selText = $(this).text();
     $(this).closest('div').find('button[data-toggle="dropdown"]').html(selText + ' <span class="caret"></span>');
 });
+
