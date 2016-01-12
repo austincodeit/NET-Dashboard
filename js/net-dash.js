@@ -698,6 +698,7 @@ function updatePieChart(dataType, dataset, duration) {
 		pctClosed = (closed / (active + closed + pending)) * 100;
 		var i = d3.interpolate(start, pctClosed)
 			return function (t) {
+			console.log(Math.round(i(t)) / 100);
 			this.textContent =Math.round(i(t)) / 100;
 		}
 	})
