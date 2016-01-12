@@ -691,12 +691,13 @@ function updatePieChart(dataType, dataset, duration) {
 	//update info text
 	d3.select("#chart_3").select(".info").transition().duration(750).ease("quad")
 	.tween("text", function (d) {
+		console.log(this.textContent);
 		var start = parseFloat(this.textContent); //parse out the % symbol - good job, javascript!
 		var active = +d[0][dataType];
 		var closed = +d[1][dataType];
 		var pending = +d[2][dataType];
 		pctClosed = (closed / (active + closed + pending)) * 100;
-		console.log(start + " " + pctClosed);
+		//console.log(start + " " + pctClosed);
 		var i = d3.interpolate(start, pctClosed)
 			return function (t) {
 			//console.log(Math.round(i(t)) / 100);
