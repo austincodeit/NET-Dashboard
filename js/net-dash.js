@@ -693,7 +693,7 @@ function updatePieChart(dataType, dataset, duration) {
 	.tween("text", function (d) {
 		var start = parseFloat(this.textContent); //parse out the % symbol - good job, javascript!
 		if (isNaN(start)){
-			start == 0;
+			start = 0;
 		}
 		var active = +d[0][dataType];
 		var closed = +d[1][dataType];
