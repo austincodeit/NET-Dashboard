@@ -698,7 +698,7 @@ function updatePieChart(dataType, dataset, duration) {
 		pctClosed = (closed / (active + closed + pending)) * 100;
 		var i = d3.interpolate(start, pctClosed)
 			return function (t) {
-			this.textContent = formatPct((Math.round(i(t)) / 100));
+			this.textContent =Math.round(i(t)) / 100;
 		}
 	})
 	//update text label locations...this took way longer than it needed to because your selections were crap
