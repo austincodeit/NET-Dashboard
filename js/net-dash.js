@@ -2,6 +2,8 @@
 //fix labels on time chart stack
 //add data refresh timestamp
 
+//why not add "all" to the type list and reduce a bunch of code?
+
 browserAlert();
 
 //globals
@@ -9,7 +11,8 @@ var data1, data2, pie, pie2, arc;
 var dataPicker = {
 	"CCs" : {},
 	"Defs" : {},
-	"CVs" : {}
+	"CVs" : {},
+	"Time":{}
 };
 
 //constants
@@ -37,7 +40,7 @@ var metadataUrl_cases = "https://data.austintexas.gov/api/views/37zz-93tg/rows.j
 //var serviceUrl_cases = "./data/cases.json"; //for offline testing
 //var serviceUrl_deficiencies = "./data/defs.json";
 var formatPct = d3.format("%");
-var formatDate = d3.time.format("%x");
+var formatDate = d3.time.format("%Y-%m-%d");  //formatting  date with year leading causes time arrays to be sorted properly--so that's good.
 var formatMonth = d3.time.format("%b %Y");
 var formatDateTime = d3.time.format("%e %b %Y %H:%M%p");
 var dataType = "all";
@@ -426,7 +429,7 @@ function formatForD3Stack(dataset) {
 	return stackFormatted;
 }
 
-function createStackChart(dataset, divId, issue) { //where issue is 'CCs' or 'Defs'
+function createStackChart(dataset, divId, issue) { //where issue is 'CCs' or 'Defs' or 'Time'
 	var alternateLabel = 1; //
 
 	//not used
@@ -470,7 +473,8 @@ function createStackChart(dataset, divId, issue) { //where issue is 'CCs' or 'De
 				alternateLabel+=1;
 				if (alternateLabel == 5) {
 					alternateLabel = 1;
-					var xLabel = formatMonth(new Date(dataset[0][d].x));
+					var xLabel = formatMonth(new Date(dataset[0][d].label));
+					console.log(d);
 					return xLabel.trunc(10, false);
 				} else {
 					return ""
@@ -825,14 +829,14 @@ function prepareTimeStackChart(dataset) {
 			}
 		}
 	}
-	//create the intial stack
-	createStackChart(formatForD3TimeStack(masterDict.all), "chart_4", "time"); //returns a stacked bar chart-friendly array; masterDict.all has an array for each status type, with each object key being a day of the year (by number) and the number of cases of that status on that day
-	//and also send the masterDict data to the data picker (for button transitions)
-	dataPicker["Time"] = {};
+	
+	// send the masterDict data to the data picker
 	dataPicker.Time.all = formatForD3TimeStack(masterDict.all);
 	for (var i = 0; i < typeList.length; i++) {
 		dataPicker.Time[typeList[i]] = formatForD3TimeStack(masterDict[typeList[i]]);
 	}
+	//create the intial stack
+	createStackChart(dataPicker.Time.all, "chart_4", "time"); 
 }
 
 function formatForD3TimeStack(dataset) {
@@ -853,10 +857,12 @@ function formatForD3TimeStack(dataset) {
 			var status = statusList[i];
 			var name = localKeyList[q];
 			var count = dataset[statusList[i]][name];
+			var label = name; //trying to bugfixhere
 			temp.push({
 				"x" : name,
 				"y" : count,
-				"status" : status
+				"status" : status,
+				"label" : name
 			});
 		}
 		stackFormatted.push(temp);
