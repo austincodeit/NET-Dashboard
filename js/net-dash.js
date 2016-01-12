@@ -5,7 +5,7 @@
 browserAlert();
 
 //globals
-var data1, data2, pie, pie2, arc, pctClosed;
+var data1, data2, pie, pie2, arc;
 var dataPicker = {
 	"CCs" : {},
 	"Defs" : {},
@@ -698,12 +698,11 @@ function updatePieChart(dataType, dataset, duration) {
 		var active = +d[0][dataType];
 		var closed = +d[1][dataType];
 		var pending = +d[2][dataType];
-		pctClosed = (closed / (active + closed + pending)) * 100;
-		//console.log(start + " " + pctClosed);
+		var pctClosed = (closed / (active + closed + pending)) * 100;
 		var i = d3.interpolate(start, pctClosed)
 			return function (t) {
 			//console.log(Math.round(i(t)) / 100);
-			this.textContent =Math.round(i(t)) / 100;
+			this.textContent = formatPct(Math.round(i(t)) / 100);
 		}
 	})
 	//update text label locations...this took way longer than it needed to because your selections were crap
