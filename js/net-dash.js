@@ -691,8 +691,10 @@ function updatePieChart(dataType, dataset, duration) {
 	//update info text
 	d3.select("#chart_3").select(".info").transition().duration(750).ease("quad")
 	.tween("text", function (d) {
-		console.log(this.textContent);
 		var start = parseFloat(this.textContent); //parse out the % symbol - good job, javascript!
+		if (isNaN(start)){
+			start == 0;
+		}
 		var active = +d[0][dataType];
 		var closed = +d[1][dataType];
 		var pending = +d[2][dataType];
