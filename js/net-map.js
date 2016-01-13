@@ -148,7 +148,7 @@ function makeMap(){
 			attribution: '<a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> | <a href="https://www.austintexas.gov/department/code" target=_blank>City of Austin Code Department</a>'
 		});
 	
-	map = new L.Map("map", {center: [30.358332, -97.688295], zoom: 14, minZoom: 12, maxZoom: 18, layers: [OSMBase]})
+	map = new L.Map("map", {center: [30.358332, -97.688295], zoom: 14, minZoom: 12, layers: [OSMBase]})
 	
 	populate();
 }
