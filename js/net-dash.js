@@ -4,7 +4,7 @@
 
 //why not add "all" to the type list and reduce a bunch of code?
 
-browserAlert();
+// browserAlert();
 
 //globals
 var data1, data2, pie, pie2, arc;
